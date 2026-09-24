@@ -1,0 +1,27 @@
+
+have nodes be 1 unit apart
+
+nodes for: blank, obstacle, searched, begin, goal and path
+   set tag
+	for blank, have a boolean called queued?, being true turns it a different colour and stops it from being added to queue again
+
+starting point searches surrounding nodes
+   check if it is goal (check tag)
+   find adjacent nodes that arent obstacles (check tag)
+   when searching a node, add adjacent nodes to queue
+	checks if already added to queue first
+
+need termination at goal or none left to search
+
+queue could be an array, and searching through does a for each loop
+   to get nodes adjacent, could find gameobject at position x+-1 or y+-1
+
+on the node script, have a function that gets called when searched, which changes the tag and colour of the node
+	probably also want a function that gets called when queued
+
+searched
+queued
+blank
+obstacle
+origin
+goal
