@@ -22,10 +22,12 @@ public class Node : MonoBehaviour
     public void Queued()
     {
         spriteRend.color = Color.yellow;
+        //
     }
     public void Searched()
     {
         spriteRend.color = Color.blue;
+        //add adjacent nodes to queue
     }
 
 
