@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -7,17 +8,20 @@ public class Searching : MonoBehaviour
 {
     public float radius;
     private Collider[] AdjacentNodesArray;
-    public List AdjacentNodes;
+    public List<GameObject> AdjacentNodes;
+    private int QueuedLayerIndex;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         //gets colliders for blank
         AdjacentNodesArray = Physics.OverlapSphere(transform.position, radius, LayerMask.GetMask("Blank"));
+
         Debug.Log(AdjacentNodesArray);
         Debug.Log(AdjacentNodesArray.Length);
+        QueuedLayerIndex = LayerMask.NameToLayer("Queued");
 
-        List<Collider> AdjacentNodes = new List<Collider>(AdjacentNodesArray);
+        AdjacentNodes = new List<GameObject>();
        
     }
 
@@ -29,16 +33,27 @@ public class Searching : MonoBehaviour
 
     public void begin()
     {
-        for (int i = 0; i < AdjacentNodesArray.Length+1; i++)
+        for (int i = 0; i < AdjacentNodesArray.Length; i++)
         {
-            AdjacentNodesArray[i].gameObject.TryGetComponent<Node>(out Node node);
-            node.Queued();
+            AdjacentNodes.Add(AdjacentNodesArray[i].gameObject);
+        }
+        
+        for (int i = 0; i < 99 /*AdjacentNodes.Count*/; i++)
+        {
+            AdjacentNodes[i].TryGetComponent<Node>(out Node node);
+            if (node != null) { node.Queued(); }
+
             //add adjacent nodes to queue
-            AdjacentNodesArray = Physics.OverlapSphere(transform.position, radius, LayerMask.GetMask("Blank"));
+            AdjacentNodesArray = Physics.OverlapSphere(AdjacentNodes[i].transform.position, radius, LayerMask.GetMask("Blank"));
+            //if (AdjacentNodesArray.Length > 0)
             for (int a = 0; a < AdjacentNodesArray.Length; a++)
                 {
-                //AdjacentNodes.Add     add collider here for each element of array.length
-                }
+                AdjacentNodes.Add(AdjacentNodesArray[a].gameObject);     //add collider here for each element of array.length
+                AdjacentNodesArray[a].gameObject.layer = QueuedLayerIndex;
+            }
+
+            if (node != null) { node.Searched(); }
+
             //AdjacentNodes.Add();
             //    = Physics.OverlapSphere(AdjacentNodes[i].transform.position, radius, LayerMask.GetMask("Blank"));
 
@@ -46,12 +61,25 @@ public class Searching : MonoBehaviour
 
             //if run out of list elements, say no available path
 
+            //Invoke(nameof(delay), 200.0f);
+            //StartCoroutine(Delay());
+
             Debug.Log(i + 1 + " finished loops");
+
         }
         //find shortest path to goal
 
 
     }
 
+    //IEnumerator Delay()
+    //{
+    //    yield return new WaitForSeconds(1000f);
+    //}
+
+    //private void delay()
+    //{
+    //    return;
+    //}
 
 }
