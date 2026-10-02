@@ -2,6 +2,7 @@ using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 
 public class Searching : MonoBehaviour
@@ -10,6 +11,7 @@ public class Searching : MonoBehaviour
     private Collider[] AdjacentNodesArray;
     public List<GameObject> AdjacentNodes;
     private int QueuedLayerIndex;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -33,25 +35,69 @@ public class Searching : MonoBehaviour
 
     public void begin()
     {
+        StartCoroutine(FindPath());
+
+            //for (int i = 0; i < AdjacentNodesArray.Length; i++)
+            //{
+            //    AdjacentNodes.Add(AdjacentNodesArray[i].gameObject);
+            //}
+
+            //for (int i = 0; i < 101 /*AdjacentNodes.Count*/; i++)
+            //{
+            //    AdjacentNodes[i].TryGetComponent<Node>(out Node node);
+            //    if (node != null) { node.Queued(); }
+
+            //    //add adjacent nodes to queue
+            //    AdjacentNodesArray = Physics.OverlapSphere(AdjacentNodes[i].transform.position, radius, LayerMask.GetMask("Blank"));
+            //    //if (AdjacentNodesArray.Length > 0)
+            //    for (int a = 0; a < AdjacentNodesArray.Length; a++)
+            //    {
+            //        AdjacentNodes.Add(AdjacentNodesArray[a].gameObject);     //add collider here for each element of array.length
+            //        AdjacentNodesArray[a].gameObject.layer = QueuedLayerIndex;
+            //    }
+
+            //    if (node != null) { node.Searched(); }
+
+            //    //AdjacentNodes.Add();
+            //    //    = Physics.OverlapSphere(AdjacentNodes[i].transform.position, radius, LayerMask.GetMask("Blank"));
+
+            //    //check if node's tag is Goal, if true, then break loop
+
+            //    //if run out of list elements, say no available path
+
+            //    //Invoke(nameof(delay), 200.0f);
+            //    //StartCoroutine(Delay());
+
+            //    Debug.Log(i + 1 + " finished loops");
+
+            //}
+            ////find shortest path to end
+    }
+
+    IEnumerator FindPath()
+    {
         for (int i = 0; i < AdjacentNodesArray.Length; i++)
         {
             AdjacentNodes.Add(AdjacentNodesArray[i].gameObject);
         }
-        
-        for (int i = 0; i < 99 /*AdjacentNodes.Count*/; i++)
+
+        for (int i = 0; i < 101 /*AdjacentNodes.Count*/; i++)
         {
-            AdjacentNodes[i].TryGetComponent<Node>(out Node node);
-            if (node != null) { node.Queued(); }
+            
+            
 
             //add adjacent nodes to queue
             AdjacentNodesArray = Physics.OverlapSphere(AdjacentNodes[i].transform.position, radius, LayerMask.GetMask("Blank"));
             //if (AdjacentNodesArray.Length > 0)
             for (int a = 0; a < AdjacentNodesArray.Length; a++)
-                {
+            {
                 AdjacentNodes.Add(AdjacentNodesArray[a].gameObject);     //add collider here for each element of array.length
                 AdjacentNodesArray[a].gameObject.layer = QueuedLayerIndex;
+                AdjacentNodesArray[a].TryGetComponent<Node>(out Node Node);
+                if (Node != null) { Node.Queued(); }
             }
-
+            
+            AdjacentNodes[i].TryGetComponent<Node>(out Node node);
             if (node != null) { node.Searched(); }
 
             //AdjacentNodes.Add();
@@ -66,11 +112,16 @@ public class Searching : MonoBehaviour
 
             Debug.Log(i + 1 + " finished loops");
 
+            if (AdjacentNodes[i].CompareTag("Goal"))
+            {
+                print("Found Goal");
+            }
+
+            yield return new WaitForSeconds(0.5f);
         }
-        //find shortest path to goal
-
-
+        //find shortest path to end
     }
+
 
     //IEnumerator Delay()
     //{
